@@ -10,15 +10,19 @@ namespace prism {
     using Coefficients = Eigen::Matrix<ColorScalar, 4, 1>;
 
     struct RGB : public Coefficients {
+        using Coefficients::Coefficients;
     };
 
     struct CieXYZ : public Coefficients {
+        using Coefficients::Coefficients;
     };
 
     struct HSV : public Coefficients {
+        using Coefficients::Coefficients;
     };
-    
+
     struct HSL : public Coefficients {
+        using Coefficients::Coefficients;
     };
 
     HSV toHsv(RGB const & rgb);
@@ -34,10 +38,19 @@ namespace prism {
         Perceptual,
     };
 
-    class RGBColorSpace
+    struct RGBColorSpace
     {
-    public:
-        RGBColorSpace(CieXY const & white, CieXY const & red, CieXY const & green, CieXY const & blue);
+        CieXY white;
+        CieXY red;
+        CieXY green;
+        CieXY blue;
+    };
+
+    Eigen::Matrix<ColorScalar, 3, 3> rgbToXyzTransformationMatrix(RGBColorSpace const & colorSpace);
+
+    struct RGBColorSpaceTransformation
+    {
+        RGBColorSpaceTransformation(RGBColorSpace const & cs);
 
         CieXYZ transform(RGB const & source) const;
         RGB transform(CieXYZ const & source, RenderingIntent intent = RenderingIntent::RelativeColorimetric) const;
