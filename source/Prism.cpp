@@ -66,7 +66,7 @@ namespace prism {
         Eigen::Matrix<ColorScalar, 3, 1> b;
         b << cs.white.x() / cs.white.y(), 1, (1 - cs.white.x()) / cs.white.y() - 1;
 
-        ret = ret.array().rowwise() * ret.colPivHouseholderQr().solve(b).array().transpose();
+        ret = ret.array().rowwise() * (ret.inverse() * b).array().transpose();
         return ret;
     }
 
