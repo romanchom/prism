@@ -56,64 +56,69 @@ namespace prism {
         return ret;
     }
 
-    RGBColorSpace::RGBColorSpace(CieXY const & white, CieXY const & red, CieXY const & green, CieXY const & blue)
+    Eigen::Matrix<ColorScalar, 3, 3> rgbToXyzTransformationMatrix(RGBColorSpace const & cs)
     {
-        Eigen::Matrix<ColorScalar, 3, 3> X;
-        X.col(0) << red, 1 - red.sum();
-        X.col(1) << green, 1 - green.sum();
-        X.col(2) << blue, 1 - blue.sum();
+        Eigen::Matrix<ColorScalar, 3, 3> ret;
+        ret.col(0) << cs.red, 1 - cs.red.sum();
+        ret.col(1) << cs.green, 1 - cs.green.sum();
+        ret.col(2) << cs.blue, 1 - cs.blue.sum();
 
         Eigen::Matrix<ColorScalar, 3, 1> b;
-        b << white.x() / white.y(), 1, (1 - white.x()) / white.y() - 1;
+        b << cs.white.x() / cs.white.y(), 1, (1 - cs.white.x()) / cs.white.y() - 1;
 
-        X = X.array().rowwise() * X.colPivHouseholderQr().solve(b).array().transpose();
+        ret = ret.array().rowwise() * (ret.inverse() * b).array().transpose();
+        return ret;
+    }
+
+    RGBColorSpaceTransformation::RGBColorSpaceTransformation(RGBColorSpace const & cs)
+    {
         mRgbToXyz.setIdentity();
-        mRgbToXyz.block<3, 3>(0, 0) = X;
+        mRgbToXyz.block<3, 3>(0, 0) = rgbToXyzTransformationMatrix(cs);
         mXyzToRgb = mRgbToXyz.inverse();
-}
+    }
 
-    CieXYZ RGBColorSpace::transform(RGB const & source) const
+    CieXYZ RGBColorSpaceTransformation::transform(RGB const & source) const
     {
         CieXYZ ret;
         static_cast<Coefficients &>(ret) = mRgbToXyz * source;
         return ret;
     }
 
-    RGB RGBColorSpace::transform(CieXYZ const & source, RenderingIntent intent) const
+    RGB RGBColorSpaceTransformation::transform(CieXYZ const & source, RenderingIntent intent) const
     {
         RGB ret;
         static_cast<Coefficients &>(ret) = mXyzToRgb * source;
         // TODO rendering intent
         return ret;
     }
-    
+
     RGBColorSpace const & rec2020()
     {
-        static const RGBColorSpace ret(
+        static const RGBColorSpace ret{
             {0.31271, 0.32902},
             {0.708,   0.292},
             {0.170,   0.797},
-            {0.131,   0.046});
+            {0.131,   0.046}};
         return ret;
     }
 
     RGBColorSpace const & ws2812()
     {
-        static const RGBColorSpace ret(
+        static const RGBColorSpace ret{
             {0.28623f, 0.27455f},
             {0.68934f, 0.31051f},
             {0.13173f, 0.77457f},
-            {0.13450f, 0.04598f});
+            {0.13450f, 0.04598f}};
         return ret;
     }
 
     RGBColorSpace const & sRGB()
     {
-        static const RGBColorSpace ret(
+        static const RGBColorSpace ret{
             {0.31271, 0.32902f},
             {0.64,    0.33},
             {0.3,     0.6},
-            {0.15,    0.06});
+            {0.15,    0.06}};
         return ret;
     }
 
