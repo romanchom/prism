@@ -16,3 +16,6 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC Eigen3::Eigen
 )
 
+if(UNIX)
+    target_compile_options(${PROJECT_NAME} PRIVATE "-fPIC")
+endif()
