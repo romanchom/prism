@@ -176,7 +176,7 @@ namespace prism {
 
         CieXYZ ret;
         ret << x, y, (1 - x - y), 0;
-        ret /= ret.sum();
+        ret /= ret.y();
         return ret;
     }
 }
