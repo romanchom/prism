@@ -136,7 +136,7 @@ namespace prism {
         return ret;
     }
 
-    CieXYZ temperature(ColorScalar t)
+    CieXY temperature(ColorScalar t)
     {
         float t2 = t * t;
         float t3 = t2 * t;
@@ -174,9 +174,6 @@ namespace prism {
                 - 0.37001483f;
         }
 
-        CieXYZ ret;
-        ret << x, y, (1 - x - y), 0;
-        ret /= ret.y();
-        return ret;
+        return {x, y};
     }
 }

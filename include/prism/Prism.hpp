@@ -68,5 +68,5 @@ namespace prism {
     RGB linearizeSRGB(RGB rgb);
     RGB compressSRGB(RGB rgb);
 
-    CieXYZ temperature(ColorScalar kelvins);
+    CieXY temperature(ColorScalar kelvins);
 }
