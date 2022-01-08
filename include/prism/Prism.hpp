@@ -13,6 +13,10 @@ namespace prism {
         using Coefficients::Coefficients;
     };
 
+    struct RGBW : public Coefficients {
+        using Coefficients::Coefficients;
+    };
+
     struct CieXYZ : public Coefficients {
         using Coefficients::Coefficients;
     };
@@ -50,6 +54,7 @@ namespace prism {
 
     struct RGBColorSpaceTransformation
     {
+        RGBColorSpaceTransformation() {};
         RGBColorSpaceTransformation(RGBColorSpace const & cs);
 
         CieXYZ transform(RGB const & source) const;
